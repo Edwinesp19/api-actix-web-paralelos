@@ -43,9 +43,11 @@ pipeline {
                         docker pull $DOCKER_REGISTRY/$DOCKER_IMAGE:$DOCKER_TAG
                         docker stop $DOCKER_IMAGE || true
                         docker rm -f $DOCKER_IMAGE || true
-                        docker run -d --restart unless-stopped --name $DOCKER_IMAGE -p 8081:8081 \
+                        docker run -d --restart unless-stopped --name $DOCKER_IMAGE \
+                        --network api-network \
                         -e DATABASE_URL=mysql://root:root@mysql:3306/rest_db \
                         -e RUST_LOG=debug \
+                        -p 8081:8081 \
                         $DOCKER_REGISTRY/$DOCKER_IMAGE:$DOCKER_TAG
                         exit
                         ENDSSH
