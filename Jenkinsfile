@@ -24,7 +24,7 @@ pipeline {
         stage('Login to Nexus') {
             steps {
                 echo "🔑 Iniciando sesión en Nexus..."
-                sh "docker login -u admin -p 'Angel2610' $DOCKER_REGISTRY"
+                sh "docker login -u admin -p 'Edwin1891' $DOCKER_REGISTRY"
             }
         }
         stage('Push to Nexus') {
