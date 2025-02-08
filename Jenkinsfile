@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_REGISTRY = "167.71.164.51:8082"
+        DOCKER_REGISTRY = "167.71.17.8:8082"
         DOCKER_IMAGE = "api-actix-web"
         DOCKER_TAG = "latest"
         SERVER_USER = "root"
