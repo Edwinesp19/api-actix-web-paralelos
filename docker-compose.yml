@@ -1,0 +1,55 @@
+services:
+  actix-api:
+    platform: linux/arm64
+    container_name: actix-api-service
+    build: .
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=mysql://root:@db:3306/rest_db
+      - RUST_LOG=info
+      - ONESIGNAL_APP_ID=${ONESIGNAL_APP_ID}
+      - ONESIGNAL_REST_API_KEY=${ONESIGNAL_REST_API_KEY}
+
+  rust-api:
+    platform: linux/arm64
+    container_name: rust-api-service
+    build: ./rust_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=mysql://root:@db:3306/rest_db
+      - RUST_LOG=info
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=rest_db
+      - BIND_ADDRESS=0.0.0.0:8080
+  db:
+    platform: linux/arm64
+    container_name: mysql-db
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_DATABASE=rest_db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+      interval: 5s
+      start_period: 10s
+
+volumes:
+  mysql_data:
